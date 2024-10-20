@@ -1,0 +1,19 @@
+---
+
+- hosts: webserver
+  become: yes
+  tasks:
+
+  - name: update repository index
+    apt:
+      update_cache: yes
+
+  - name: Install nodejs
+    apt:
+      name: neofetch
+      state: latest
+
+  - name: Install npm
+    apt:
+      name: npm
+      state: latest

@@ -1,0 +1,58 @@
+---
+- name: Copy files to nodes
+  hosts: webserver 
+  become: yes
+  tasks:
+    # - name: Copy a single file to the remote node
+    #   copy:
+    #     src: /path/to/local/file.txt  # Path on the control machine
+    #     dest: /path/to/remote/file.txt  # Path on the remote node
+
+    - name: Copy project directory to the remote node
+      copy:
+        src: /home/ubuntu/web-project/
+        dest: /var/www/
+        mode: '0755'
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Extract web-project.tar.gz
+      unarchive:
+        # Path to the tar.gz file on the remote server
+        src: /var/www/web-project.tar.gz  
+
+        # Directory to extract files to
+        dest: /var/www/
+
+        # Indicates the source file is already on the remote machine
+        remote_src: yes
+
+    - name: Create the Apache virtual host configuration file
+      copy:
+        dest: /etc/apache2/sites-available/web-project.conf
+        content: |
+          <VirtualHost *:80>
+              ServerAdmin webmaster@demo-web
+              ServerName snipe
+              DocumentRoot /var/www/web-project/public
+
+              <Directory /var/www/web-project/public>
+                  Options Indexes FollowSymLinks
+                  AllowOverride All
+                  Require all granted
+              </Directory>
+
+              ErrorLog ${APACHE_LOG_DIR}/error.log
+              CustomLog ${APACHE_LOG_DIR}/access.log combined
+          </VirtualHost>
+
+    - name: Enable the new virtual host
+      command: a2ensite web-project.conf
+
+    - name: Disable the default virtual host
+      command: a2dissite 000-default.conf
+
+    - name: Restart Apache to apply changes
+      systemd:
+        name: apache2
+        state: restarted

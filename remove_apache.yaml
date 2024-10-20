@@ -1,0 +1,34 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: update repository index
+    apt:
+      update_cache: yes
+
+  - name: Remove Apache2 package
+    apt:
+      name: apache2
+      state: absent
+
+  - name: Remove Apache2 binaries
+    apt:
+      name: apache2-bin
+      state: absent
+
+  - name: Remove Apache2 utils
+    apt:
+      name: apache2-utils
+      state: absent
+
+  - name: Remove Apache2 data
+    apt:
+      name: apache2-data
+      state: absent
+
+  - name: Remove PHP support for Apache2
+    apt:
+      name: libapache2-mod-php
+      state: absent

@@ -1,0 +1,10 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: Remove fortune
+    apt:
+      name: fortune-mod
+      state: absent

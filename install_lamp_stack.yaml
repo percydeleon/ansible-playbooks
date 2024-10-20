@@ -1,0 +1,63 @@
+---
+- name: Install Apache, PHP, and MariaDB on Debian
+  #
+  # Change to your target group or host
+  hosts: webserver
+
+  # Use this if you need to escalate privileges
+  become: yes
+
+  tasks:
+    - name: Update apt package index
+      apt:
+        update_cache: yes
+
+    - name: Install zip 
+      apt:
+        name: [zip,unzip,gzip,pigz]
+
+    - name: Install Apache
+      apt:
+        name: [apache2,libapache2-mod-php,libapache2-mod-ssl]
+        state: present
+
+    - name: Install PHP and common extensions
+      apt:
+        name:
+          - php
+          - php-mysql
+          - php-xml
+          - php-mbstring
+          - php-curl
+          - php-zip
+          - php-bcmath
+          - php-bz2
+          - php-cli
+          - php-common
+          - php-fpm
+          - php-gd
+          - php-intl
+          - php-json
+          - php-ldap
+          - php-pear
+          - php-tokenizer
+          - php-opcache
+          - php-readline        
+        state: present
+
+    - name: Install MariaDB server
+      apt:
+        name: mariadb-server
+        state: present
+
+    - name: Ensure Apache is running and enabled
+      systemd:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Ensure MariaDB is running and enabled
+      systemd:
+        name: mariadb
+        state: started
+        enabled: yes
